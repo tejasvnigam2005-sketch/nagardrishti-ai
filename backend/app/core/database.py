@@ -33,12 +33,17 @@ class Database:
         self._report_seq = 1
         self._load_from_disk()
     def _get_storage_paths(self) -> List[Path]:
+        paths = []
         p1 = Path(__file__).resolve().parent.parent.parent / "data" / "complaints_db.json"
         try:
             p1.parent.mkdir(parents=True, exist_ok=True)
-            return [p1]
+            paths.append(p1)
         except Exception:
-            return []
+            pass
+        # Serverless fallback for writable temp storage
+        p2 = Path("/tmp/complaints_db.json")
+        paths.append(p2)
+        return paths
 
     def _load_from_disk(self):
         for p in self._get_storage_paths():
